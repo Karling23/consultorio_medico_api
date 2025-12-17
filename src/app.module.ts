@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     }),
     AuthModule,
     UsuariosModule,
+    HistorialClinicoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
