@@ -9,6 +9,13 @@ import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { DoctoresConsultoriosModule } from './doctoresConsultorios/doctores-consultorios.module';
 import { DoctoresModule } from './doctores/doctores.module';
 import { RecetasModule } from './recetas/recetas.module';
+import { PacientesModule } from './pacientes/pacientes.module';
+import { ConsultoriosModule } from './consultorios/consultorios.module';
+import { CitasMedicasModule } from './citas-medicas/citas-medicas.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
+import { MedicamentosModule } from './medicamentos/medicamentos.module';
+import { RecetaDetalleModule } from './receta-detalle/receta-detalle.module';
 
 @Module({
   imports: [
@@ -30,6 +37,13 @@ import { RecetasModule } from './recetas/recetas.module';
     DoctoresConsultoriosModule,
     DoctoresModule,
     RecetasModule,
+    PacientesModule,
+    ConsultoriosModule,
+    CitasMedicasModule,
+    UsuariosModule,
+    HistorialClinicoModule,
+    MedicamentosModule,
+    RecetaDetalleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
