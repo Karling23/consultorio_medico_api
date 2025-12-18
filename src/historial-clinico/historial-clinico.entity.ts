@@ -12,12 +12,12 @@ export class HistorialClinico {
     @Column({ name: 'id_cita' })
     id_cita: number;
 
-    @Column({ type: 'text', nullable: true })
-    diagnostico?: string;
+    @Column({ type: 'text', nullable: false })
+    diagnostico: string;
 
-    @Column({ type: 'text', nullable: true })
-    tratamiento?: string;
+    @Column({ type: 'text', nullable: false })
+    tratamiento: string;
 
-    @Column({ type: 'text', nullable: true })
-    observaciones?: string;
+    @Column({ type: 'text', nullable: false })
+    observaciones: string;
 }

@@ -5,14 +5,11 @@ export class CreateHistorialClinicoDto {
     id_cita: number;
 
     @IsString()
-    @IsOptional()
-    diagnostico?: string;
+    diagnostico: string;
 
     @IsString()
-    @IsOptional()
-    tratamiento?: string;
+    tratamiento: string;
 
     @IsString()
-    @IsOptional()
-    observaciones?: string;
+    observaciones: string;
 }

@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
+import { RecetaDetalleModule } from './receta-detalle/receta-detalle.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MedicamentosModule } from './medicamentos/medicamentos.module';
     UsuariosModule,
     HistorialClinicoModule,
     MedicamentosModule,
+    RecetaDetalleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
