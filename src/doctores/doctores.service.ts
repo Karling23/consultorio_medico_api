@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { Doctor } from './doctor.entity';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
@@ -17,14 +18,14 @@ export class DoctoresService {
     return await this.doctorRepository.save(nuevoDoctor);
   }
 
-  async findAll(): Promise<Doctor[]> {
-    return await this.doctorRepository.find();
+  async findAll(options: IPaginationOptions): Promise<Pagination<Doctor>> {
+    return paginate<Doctor>(this.doctorRepository, options);
   }
 
   async findOne(id: number): Promise<Doctor> {
     const doctor = await this.doctorRepository.findOneBy({ id_doctor: id });
     if (!doctor) {
-      throw new Error('Doctor not found');
+      throw new NotFoundException(`Doctor con ID ${id} no encontrado`);
     }
     return doctor;
   }
@@ -36,6 +37,9 @@ export class DoctoresService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.doctorRepository.delete(id);
+    const result = await this.doctorRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Doctor con ID ${id} no encontrado`);
+    }
   }
 }
