@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { Medicamento } from './medicamento.entity';
 import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
 import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class MedicamentosService {
@@ -20,8 +20,11 @@ export class MedicamentosService {
         return this.medicamentoRepository.save(medicamento);
     }
 
-    async findAll(): Promise<Medicamento[]> {
-        return this.medicamentoRepository.find();
+    async findAll(
+        options: IPaginationOptions,
+    ): Promise<Pagination<Medicamento>> {
+        const qb = this.medicamentoRepository.createQueryBuilder('medicamento');
+        return paginate<Medicamento>(qb, options);
     }
 
     async findOne(id: number): Promise<Medicamento | null> {

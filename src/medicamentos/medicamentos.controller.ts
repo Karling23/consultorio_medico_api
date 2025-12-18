@@ -7,11 +7,13 @@ import {
     Body,
     Param,
     ParseIntPipe,
+    Query,
 } from '@nestjs/common';
-
 import { MedicamentosService } from './medicamentos.service';
 import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
 import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Medicamento } from './medicamento.entity';
 
 @Controller('medicamentos')
 export class MedicamentosController {
@@ -25,8 +27,12 @@ export class MedicamentosController {
     }
 
     @Get()
-    findAll() {
-        return this.medicamentosService.findAll();
+    findAll(
+        @Query('page') page = 1,
+        @Query('limit') limit = 10,
+    ): Promise<Pagination<Medicamento>> {
+        limit = limit > 100 ? 100 : limit;
+        return this.medicamentosService.findAll({ page, limit });
     }
 
     @Get(':id')
