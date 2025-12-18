@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
+import { MedicamentosModule } from './medicamentos/medicamentos.module';
+import { RecetaDetalleModule } from './receta-detalle/receta-detalle.module';
 
 @Module({
   imports: [
@@ -20,6 +24,10 @@ import { AuthModule } from './auth/auth.module';
       //ssl: { rejectUnauthorized: false },
     }),
     AuthModule,
+    UsuariosModule,
+    HistorialClinicoModule,
+    MedicamentosModule,
+    RecetaDetalleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
