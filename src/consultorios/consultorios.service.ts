@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Consultorio } from './consultorio.entity';
 import { CreateConsultorioDto } from './dto/create-consultorio.dto';
 import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class ConsultoriosService {
@@ -20,9 +21,12 @@ export class ConsultoriosService {
         return this.consultoriosRepository.save(consultorio);
     }
 
-    async findAll(): Promise<Consultorio[]> {
-        return this.consultoriosRepository.find();
-    }
+    async findAll(
+    options: IPaginationOptions,
+    ): Promise<Pagination<Consultorio>> {
+    const qb = this.consultoriosRepository.createQueryBuilder('consultorio');
+    return paginate<Consultorio>(qb, options);
+}
 
     async findOne(id: number): Promise<Consultorio | null> {
         return this.consultoriosRepository.findOne({

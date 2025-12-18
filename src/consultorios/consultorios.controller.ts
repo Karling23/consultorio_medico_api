@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
 
 import { ConsultoriosService } from './consultorios.service';
 import { CreateConsultorioDto } from './dto/create-consultorio.dto';
 import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Consultorio } from './consultorio.entity';
 
 @Controller('consultorios')
 export class ConsultoriosController {
@@ -16,8 +18,12 @@ export class ConsultoriosController {
     }
 
     @Get()
-    findAll() {
-        return this.consultoriosService.findAll();
+    findAll(
+        @Query('page') page = 1,
+        @Query('limit') limit = 10,
+    ): Promise<Pagination<Consultorio>> {
+    limit = limit > 100 ? 100 : limit;
+        return this.consultoriosService.findAll({ page, limit });
     }
 
     @Get(':id')

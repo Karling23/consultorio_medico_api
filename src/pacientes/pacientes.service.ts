@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Paciente } from './paciente.entity';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PacientesService {
@@ -20,16 +21,17 @@ export class PacientesService {
         return this.pacientesRepository.save(paciente);
     }
 
-    async findAll(): Promise<Paciente[]> {
-        return this.pacientesRepository.find({
-            relations: ['usuario'], // Se agrega la relación con la tabla usuarios
-        });
-    }
+    async findAll(
+    options: IPaginationOptions,
+): Promise<Pagination<Paciente>> {
+    const qb = this.pacientesRepository.createQueryBuilder('paciente');
+    return paginate<Paciente>(qb, options);
+}
 
     async findOne(id: number): Promise<Paciente | null> {
         return this.pacientesRepository.findOne({
             where: { id_paciente: id },
-            relations: ['usuario'], // Se agrega la relación para búsqueda individual
+            relations: ['usuario'], 
         });
     }
 

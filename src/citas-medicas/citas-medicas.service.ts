@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CitaMedica } from './cita-medica.entity';
 import { CreateCitaMedicaDto } from './dto/create-cita-medica.dto';
 import { UpdateCitaMedicaDto } from './dto/update-cita-medica.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CitasMedicasService {
@@ -20,10 +21,11 @@ export class CitasMedicasService {
         return this.citasRepository.save(cita);
     }
 
-    async findAll(): Promise<CitaMedica[]> {
-        return this.citasRepository.find({
-            relations: ['paciente', 'doctor', 'consultorio'],
-        });
+    async findAll(
+    options: IPaginationOptions,
+    ): Promise<Pagination<CitaMedica>> {
+    const qb = this.citasRepository.createQueryBuilder('cita_medica');
+    return paginate<CitaMedica>(qb, options);
     }
 
     async findOne(id: number): Promise<CitaMedica | null> {
