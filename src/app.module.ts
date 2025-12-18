@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { DoctoresConsultoriosModule } from './doctoresConsultorios/doctores-consultorios.module';
+import { DoctoresModule } from './doctores/doctores.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { DoctoresConsultoriosModule } from './doctoresConsultorios/doctores-cons
     MailModule,
     EspecialidadesModule,
     DoctoresConsultoriosModule,
+    DoctoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],
