@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { Receta } from './receta.entity';
 import { CreateRecetaDto } from './dto/create-receta.dto';
 import { UpdateRecetaDto } from './dto/update-receta.dto';
@@ -17,14 +18,14 @@ export class RecetasService {
     return await this.recetaRepository.save(nuevaReceta);
   }
 
-  async findAll(): Promise<Receta[]> {
-    return await this.recetaRepository.find();
+  async findAll(options: IPaginationOptions): Promise<Pagination<Receta>> {
+    return paginate<Receta>(this.recetaRepository, options);
   }
 
   async findOne(id: number): Promise<Receta> {
     const receta = await this.recetaRepository.findOneBy({ id_receta: id });
     if (!receta) {
-      throw new Error('Receta not found');
+      throw new NotFoundException(`Receta con ID ${id} no encontrada`);
     }
     return receta;
   }
@@ -36,6 +37,7 @@ export class RecetasService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.recetaRepository.delete(id);
+    const receta = await this.findOne(id);
+    await this.recetaRepository.remove(receta);
   }
 }
