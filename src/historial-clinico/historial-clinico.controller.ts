@@ -7,11 +7,13 @@ import {
     Body,
     Param,
     ParseIntPipe,
+    Query
 } from '@nestjs/common';
-
 import { HistorialClinicoService } from './historial-clinico.service';
 import { CreateHistorialClinicoDto } from './dto/create-historial-clinico.dto';
 import { UpdateHistorialClinicoDto } from './dto/update-historial-clinico.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { HistorialClinico } from './historial-clinico.entity';
 
 @Controller('historial-clinico')
 export class HistorialClinicoController {
@@ -25,8 +27,12 @@ export class HistorialClinicoController {
     }
 
     @Get()
-    findAll() {
-        return this.historialClinicoService.findAll();
+    findAll(
+        @Query('page') page = 1,
+        @Query('limit') limit = 10,
+    ): Promise<Pagination<HistorialClinico>> {
+        limit = limit > 100 ? 100 : limit;
+        return this.historialClinicoService.findAll({ page, limit });
     }
 
     @Get(':id')

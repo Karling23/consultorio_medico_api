@@ -7,12 +7,13 @@ import {
     Body,
     Param,
     ParseIntPipe,
+    Query,
 } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { Query } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { Usuario } from './usuario.entity';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -27,11 +28,9 @@ export class UsuariosController {
     findAll(
         @Query('page') page = 1,
         @Query('limit') limit = 10,
-    ) {
-        return this.usuariosService.findAll({
-            page,
-            limit: limit > 100 ? 100 : limit,
-        });
+    ): Promise<Pagination<Usuario>> {
+        limit = limit > 100 ? 100 : limit;
+        return this.usuariosService.findAll({ page, limit });
     }
 
     @Get(':id')

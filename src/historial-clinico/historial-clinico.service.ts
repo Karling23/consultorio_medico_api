@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { HistorialClinico } from './historial-clinico.entity';
 import { CreateHistorialClinicoDto } from './dto/create-historial-clinico.dto';
 import { UpdateHistorialClinicoDto } from './dto/update-historial-clinico.dto';
+import {
+    paginate,
+    Pagination,
+    IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class HistorialClinicoService {
@@ -20,10 +24,11 @@ export class HistorialClinicoService {
         return this.historialRepository.save(historial);
     }
 
-    async findAll(): Promise<HistorialClinico[]> {
-        return this.historialRepository.find({
-        relations: ['cita'],
-        });
+    async findAll(
+        options: IPaginationOptions,
+    ): Promise<Pagination<HistorialClinico>> {
+        const qb = this.historialRepository.createQueryBuilder('historial');
+        return paginate<HistorialClinico>(qb, options);
     }
 
     async findOne(id: number): Promise<HistorialClinico | null> {
