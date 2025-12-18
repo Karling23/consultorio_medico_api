@@ -8,6 +8,7 @@ import { MailModule } from './mail/mail.module';
 import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { DoctoresConsultoriosModule } from './doctoresConsultorios/doctores-consultorios.module';
 import { DoctoresModule } from './doctores/doctores.module';
+import { RecetasModule } from './recetas/recetas.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { DoctoresModule } from './doctores/doctores.module';
     EspecialidadesModule,
     DoctoresConsultoriosModule,
     DoctoresModule,
+    RecetasModule,
   ],
   controllers: [AppController],
   providers: [AppService],
