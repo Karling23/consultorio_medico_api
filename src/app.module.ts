@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { MailModule } from './mail/mail.module';
+import { EspecialidadesModule } from './especialidades/especialidades.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { AuthModule } from './auth/auth.module';
       //ssl: { rejectUnauthorized: false },
     }),
     AuthModule,
+    MailModule,
+    EspecialidadesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
