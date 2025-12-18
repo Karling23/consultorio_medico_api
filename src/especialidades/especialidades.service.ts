@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Especialidad } from './entities/especialidad.entity';
 import { CreateEspecialidadDto } from './dto/create-especialidad.dto';
 import { UpdateEspecialidadDto } from './dto/update-especialidad.dto';
@@ -17,8 +18,8 @@ export class EspecialidadesService {
     return await this.especialidadRepository.save(nuevaEspecialidad);
   }
 
-  async findAll(): Promise<Especialidad[]> {
-    return await this.especialidadRepository.find();
+  async findAll(options: IPaginationOptions): Promise<Pagination<Especialidad>> {
+    return paginate<Especialidad>(this.especialidadRepository, options);
   }
 
   async findOne(id: number): Promise<Especialidad> {

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EspecialidadesController } from './especialidades.controller';
 import { EspecialidadesService } from './especialidades.service';
-import { Especialidad } from './entities/especialidad.entity';
+import { Especialidad } from './especialidad.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Especialidad])],

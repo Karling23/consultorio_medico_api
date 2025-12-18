@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe } from '@nestjs/common';
 import { EspecialidadesService } from './especialidades.service';
 import { CreateEspecialidadDto } from './dto/create-especialidad.dto';
 import { UpdateEspecialidadDto } from './dto/update-especialidad.dto';
@@ -13,8 +13,15 @@ export class EspecialidadesController {
   }
 
   @Get()
-  findAll() {
-    return this.especialidadesService.findAll();
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+    return this.especialidadesService.findAll({
+      page,
+      limit,
+    });
   }
 
   @Get(':id')
