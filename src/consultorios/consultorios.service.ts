@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Consultorio } from './consultorio.entity';
-import { CreateConsultorioDto } from './dto/create-consultorios.dto';
-import { UpdateConsultorioDto } from './dto/update-consultorios.dto';
+import { CreateConsultorioDto } from './dto/create-consultorio.dto';
+import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
 
 @Injectable()
 export class ConsultoriosService {

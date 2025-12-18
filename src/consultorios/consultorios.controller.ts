@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 
 import { ConsultoriosService } from './consultorios.service';
-import { CreateConsultorioDto } from './dto/create-consultorios.dto';
-import { UpdateConsultorioDto } from './dto/update-consultorios.dto';
+import { CreateConsultorioDto } from './dto/create-consultorio.dto';
+import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
 
 @Controller('consultorios')
 export class ConsultoriosController {

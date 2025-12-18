@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { PacientesModule } from './pacientes/pacientes.module';
 import { ConsultoriosModule } from './consultorios/consultorios.module';
+import { CitasMedicasModule } from './citas-medicas/citas-medicas.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConsultoriosModule } from './consultorios/consultorios.module';
     MailModule,
     PacientesModule,
     ConsultoriosModule,
+    CitasMedicasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

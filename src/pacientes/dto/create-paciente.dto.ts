@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsNotEmpty, IsOptional, Length, IsDateString } from 'class-validator';
+import { IsInt, IsString, IsNotEmpty, Length, IsDateString } from 'class-validator';
 
 export class CreatePacienteDto {
     @IsInt()
