@@ -5,6 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { EspecialidadesModule } from './especialidades/especialidades.module';
+import { DoctoresConsultoriosModule } from './doctoresConsultorios/doctores-consultorios.module';
+import { DoctoresModule } from './doctores/doctores.module';
+import { RecetasModule } from './recetas/recetas.module';
 import { PacientesModule } from './pacientes/pacientes.module';
 import { ConsultoriosModule } from './consultorios/consultorios.module';
 import { CitasMedicasModule } from './citas-medicas/citas-medicas.module';
@@ -29,6 +33,10 @@ import { RecetaDetalleModule } from './receta-detalle/receta-detalle.module';
     }),
     AuthModule,
     MailModule,
+    EspecialidadesModule,
+    DoctoresConsultoriosModule,
+    DoctoresModule,
+    RecetasModule,
     PacientesModule,
     ConsultoriosModule,
     CitasMedicasModule,

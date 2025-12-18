@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
+import { UsuariosModule } from '../usuarios/usuarios.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/user.entity';
+import { UsuariosService } from '../usuarios/usuarios.service';
+import { Usuario } from '../usuarios/usuario.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    UsersModule,
+    TypeOrmModule.forFeature([Usuario]),
+    UsuariosModule,
     PassportModule,
     ConfigModule.forRoot(),
     JwtModule.registerAsync({
@@ -26,6 +26,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UsersService],
+  providers: [AuthService, JwtStrategy, UsuariosService],
 })
 export class AuthModule {}

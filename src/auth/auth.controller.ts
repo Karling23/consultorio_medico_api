@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { SuccessResponseDto } from 'src/common/dto/response.dto';
+import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto';
+import { SuccessResponseDto } from '../common/dto/response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,8 +24,8 @@ export class AuthController {
     }
 
     @Post('register')
-    async register(@Body() createUserDto: CreateUserDto) {
-        const token = await this.authService.register(createUserDto);
+    async register(@Body() createUsuarioDto: CreateUsuarioDto) {
+        const token = await this.authService.register(createUsuarioDto);
         if (!token) {
         throw new BadRequestException('Failed to register user');
         }
