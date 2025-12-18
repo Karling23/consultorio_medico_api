@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { RecetaDetalle } from './receta-detalle.entity';
 import { CreateRecetaDetalleDto } from './dto/create-receta-detalle.dto';
 import { UpdateRecetaDetalleDto } from './dto/update-receta-detalle.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class RecetaDetalleService {
@@ -20,8 +21,11 @@ export class RecetaDetalleService {
         return this.recetaDetalleRepository.save(detalle);
     }
 
-    async findAll(): Promise<RecetaDetalle[]> {
-        return this.recetaDetalleRepository.find();
+    async findAll(
+        options: IPaginationOptions,
+    ): Promise<Pagination<RecetaDetalle>> {
+        const qb = this.recetaDetalleRepository.createQueryBuilder('detalle');
+        return paginate<RecetaDetalle>(qb, options);
     }
 
     async findOne(id: number): Promise<RecetaDetalle | null> {

@@ -7,11 +7,13 @@ import {
     Body,
     Param,
     ParseIntPipe,
+    Query,
 } from '@nestjs/common';
-
 import { RecetaDetalleService } from './receta-detalle.service';
 import { CreateRecetaDetalleDto } from './dto/create-receta-detalle.dto';
 import { UpdateRecetaDetalleDto } from './dto/update-receta-detalle.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { RecetaDetalle } from './receta-detalle.entity';
 
 @Controller('receta-detalle')
 export class RecetaDetalleController {
@@ -25,8 +27,12 @@ export class RecetaDetalleController {
     }
 
     @Get()
-    findAll() {
-        return this.recetaDetalleService.findAll();
+    findAll(
+        @Query('page') page = 1,
+        @Query('limit') limit = 10,
+    ): Promise<Pagination<RecetaDetalle>> {
+        limit = limit > 100 ? 100 : limit;
+        return this.recetaDetalleService.findAll({ page, limit });
     }
 
     @Get(':id')
