@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { MailModule } from './mail/mail.module';
+import { PacientesModule } from './pacientes/pacientes.module';
+import { ConsultoriosModule } from './consultorios/consultorios.module';
+import { CitasMedicasModule } from './citas-medicas/citas-medicas.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
@@ -24,6 +28,10 @@ import { RecetaDetalleModule } from './receta-detalle/receta-detalle.module';
       //ssl: { rejectUnauthorized: false },
     }),
     AuthModule,
+    MailModule,
+    PacientesModule,
+    ConsultoriosModule,
+    CitasMedicasModule,
     UsuariosModule,
     HistorialClinicoModule,
     MedicamentosModule,
