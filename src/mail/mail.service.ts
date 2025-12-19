@@ -1,9 +1,14 @@
 import * as nodemailer from 'nodemailer';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SendMailDto } from './dto/send-mail.dto';
+import axios from 'axios';
 
 @Injectable()
 export class MailService {
+    async fetchUserListFromPublicApi() {
+        const res = await axios.get('https://jsonplaceholder.typicode.com/users');
+        return res.data;
+        }
     async sendMail(dto: SendMailDto) {
         const transporter = nodemailer.createTransport({
         service: 'gmail',
