@@ -30,8 +30,7 @@ export class CitasMedicasService {
 
     async findOne(id: number): Promise<CitaMedica | null> {
         return this.citasRepository.findOne({
-            where: { id_cita: id }, 
-            relations: ['paciente', 'doctor', 'consultorio'],
+            where: { id_cita: id },
         });
     }
 
