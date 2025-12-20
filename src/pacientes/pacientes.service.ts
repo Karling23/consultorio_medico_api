@@ -21,12 +21,23 @@ export class PacientesService {
         return this.pacientesRepository.save(paciente);
     }
 
-    async findAll(
-    options: IPaginationOptions,
-): Promise<Pagination<Paciente>> {
-    const qb = this.pacientesRepository.createQueryBuilder('paciente');
-    return paginate<Paciente>(qb, options);
-}
+    async findAll(query: any): Promise<Pagination<Paciente>> {
+        const { page, limit, search } = query;
+        const qb = this.pacientesRepository.createQueryBuilder('paciente');
+
+        if (search) {
+            // Buscamos por cedula, telefono o direccion (ajusta según tus columnas reales)
+            qb.andWhere(
+                '(paciente.cedula ILIKE :search OR paciente.telefono ILIKE :search OR paciente.direccion ILIKE :search)',
+                { search: `%${search}%` }
+            );
+        }
+
+        // Ordenar por ID o Cédula por defecto
+        qb.orderBy('paciente.id_paciente', 'ASC');
+
+        return paginate<Paciente>(qb, { page, limit });
+    }
 
     async findOne(id: number): Promise<Paciente | null> {
         return this.pacientesRepository.findOne({

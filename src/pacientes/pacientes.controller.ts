@@ -23,13 +23,20 @@ export class PacientesController {
     }
 
     @Get()
-    findAll(
-        @Query('page') page = 1,
-        @Query('limit') limit = 10,
-    ): Promise<Pagination<Paciente>> {
-    limit = limit > 100 ? 100 : limit;
-    return this.pacientesService.findAll({ page, limit });
-}
+    findAll(@Query() query: any): Promise<Pagination<Paciente>> {
+        // Convertimos a números y damos valores por defecto
+        const page = query.page ? Number(query.page) : 1;
+        const limit = query.limit ? Number(query.limit) : 10;
+        
+        const finalLimit = limit > 100 ? 100 : limit;
+
+        // Enviamos todo el objeto al servicio
+        return this.pacientesService.findAll({ 
+            ...query, 
+            page, 
+            limit: finalLimit 
+        });
+    }
 
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
