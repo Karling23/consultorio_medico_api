@@ -31,7 +31,6 @@ export class PacientesService {
     async findOne(id: number): Promise<Paciente | null> {
         return this.pacientesRepository.findOne({
             where: { id_paciente: id },
-            relations: ['usuario'], 
         });
     }
 

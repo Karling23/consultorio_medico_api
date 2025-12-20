@@ -24,7 +24,7 @@ export class UsuariosService {
         const usuario = this.usuarioRepository.create({
         nombre_usuario: createUsuarioDto.nombre_usuario,
         password: hashedPassword,
-        rol: createUsuarioDto.rol,
+        rol: createUsuarioDto.rol || 'paciente',
         });
 
         return this.usuarioRepository.save(usuario);
