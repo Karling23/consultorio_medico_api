@@ -13,10 +13,10 @@ export class Usuario {
     @Column({ name: 'nombre_usuario', length: 50 })
     nombre_usuario: string;
 
-    @Column({ name: 'contraseña', length: 255 })
+    @Column({ name: 'password', length: 255 })
     password: string;
 
-    @Column({ length: 20 })
+    @Column({ length: 20, default: 'paciente' })
     rol: string;
 
     @CreateDateColumn({
@@ -25,4 +25,7 @@ export class Usuario {
         default: () => 'CURRENT_TIMESTAMP',
     })
     fecha_creacion: Date;
+
+    @Column({ nullable: true })
+    profile: string;
 }
