@@ -21,11 +21,18 @@ export class CitasMedicasService {
         return this.citasRepository.save(cita);
     }
 
-    async findAll(
-    options: IPaginationOptions,
-    ): Promise<Pagination<CitaMedica>> {
-    const qb = this.citasRepository.createQueryBuilder('cita_medica');
-    return paginate<CitaMedica>(qb, options);
+    async findAll(query: any): Promise<Pagination<CitaMedica>> {
+        const { page, limit, search } = query;
+        const qb = this.citasRepository.createQueryBuilder('cita');
+
+        if (search) {
+            qb.andWhere(
+                '(cita.estado ILIKE :search OR cita.motivo ILIKE :search)',
+                { search: `%${search}%` }
+            );
+        }
+
+        return await paginate<CitaMedica>(qb, { page, limit });
     }
 
     async findOne(id: number): Promise<CitaMedica | null> {

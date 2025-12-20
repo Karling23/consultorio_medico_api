@@ -23,13 +23,16 @@ export class CitasMedicasController {
     }
 
     @Get()
-    findAll(
-        @Query('page') page = 1,
-        @Query('limit') limit = 10,
-    ): Promise<Pagination<CitaMedica>> {
-    limit = limit > 100 ? 100 : limit;
-        return this.citasMedicasService.findAll({ page, limit });
-    }   
+    async findAll(@Query() query: any): Promise<Pagination<CitaMedica>> {
+        const cleanQuery = {
+            page: query.page || query.Page || 1,
+            limit: query.limit || query.Limit || 10,
+            search: query.search || query.Search || '',
+            searchField: query.searchField || query.SearchField || ''
+        };
+
+        return this.citasMedicasService.findAll(cleanQuery);
+    } 
 
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
