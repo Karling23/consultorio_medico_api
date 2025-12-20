@@ -23,12 +23,20 @@ export class ConsultoriosController {
     }
 
     @Get()
-    findAll(
-        @Query('page') page = 1,
-        @Query('limit') limit = 10,
-    ): Promise<Pagination<Consultorio>> {
-    limit = limit > 100 ? 100 : limit;
-        return this.consultoriosService.findAll({ page, limit });
+    findAll(@Query() query: any): Promise<Pagination<Consultorio>> {
+        // Aseguramos que page y limit sean números y tengan valores por defecto
+        const page = query.page ? Number(query.page) : 1;
+        const limit = query.limit ? Number(query.limit) : 10;
+        
+        // Mantenemos tu regla de máximo 100
+        const finalLimit = limit > 100 ? 100 : limit;
+
+        // Pasamos el objeto completo (que ahora sí incluye el search)
+        return this.consultoriosService.findAll({ 
+            ...query, 
+            page, 
+            limit: finalLimit 
+        });
     }
 
     @Get(':id')

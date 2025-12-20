@@ -21,12 +21,23 @@ export class ConsultoriosService {
         return this.consultoriosRepository.save(consultorio);
     }
 
-    async findAll(
-    options: IPaginationOptions,
-    ): Promise<Pagination<Consultorio>> {
-    const qb = this.consultoriosRepository.createQueryBuilder('consultorio');
-    return paginate<Consultorio>(qb, options);
-}
+    async findAll(query: any): Promise<Pagination<Consultorio>> {
+        const { page, limit, search } = query;
+        const qb = this.consultoriosRepository.createQueryBuilder('consultorio');
+
+        if (search) {
+            // Buscamos en las columnas 'nombre' y 'ubicacion' de tu tabla consultorios
+            qb.andWhere(
+                '(consultorio.nombre ILIKE :search OR consultorio.ubicacion ILIKE :search)',
+                { search: `%${search}%` }
+            );
+        }
+
+        // Ordenamos por nombre de forma ascendente por defecto
+        qb.orderBy('consultorio.nombre', 'ASC');
+
+        return paginate<Consultorio>(qb, { page, limit });
+    }
 
     async findOne(id: number): Promise<Consultorio | null> {
         return this.consultoriosRepository.findOne({
