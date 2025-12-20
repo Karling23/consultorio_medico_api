@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {Injectable, CanActivate, ExecutionContext, ForbiddenException} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -16,8 +16,18 @@ export class RolesGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
 
-        if (!user || !user.rol) return false;
+        if (!user || !user.rol) {
+        throw new ForbiddenException(
+            'Permiso denegado: rol no encontrado',
+        );
+        }
 
-        return requiredRoles.includes(user.rol);
+        if (!requiredRoles.includes(user.rol)) {
+        throw new ForbiddenException(
+            'Permiso denegado: solo administradores pueden realizar esta acción',
+        );
+        }
+
+        return true;
     }
 }
