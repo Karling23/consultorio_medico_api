@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 
 import { ConsultoriosService } from './consultorios.service';
 import { CreateConsultorioDto } from './dto/create-consultorio.dto';
 import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Consultorio } from './consultorio.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('consultorios')
 export class ConsultoriosController {
@@ -13,6 +16,8 @@ export class ConsultoriosController {
     ) {}
 
     @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
     create(@Body() createDto: CreateConsultorioDto) {
         return this.consultoriosService.create(createDto);
     }
@@ -32,6 +37,8 @@ export class ConsultoriosController {
     }
 
     @Put(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateDto: UpdateConsultorioDto,
@@ -40,6 +47,8 @@ export class ConsultoriosController {
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.consultoriosService.remove(id);
     }
