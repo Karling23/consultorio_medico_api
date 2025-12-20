@@ -10,6 +10,7 @@ import {
     Pagination,
     IPaginationOptions,
 } from 'nestjs-typeorm-paginate';
+import { QueryDto } from 'src/common/dto/querry.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -31,13 +32,73 @@ export class UsuariosService {
     }
 
     async findAll(
-    options: IPaginationOptions,
-    ): Promise<Pagination<Usuario>> {
-    const queryBuilder =
+    queryDto: QueryDto,
+    isActive?: boolean,
+    ): Promise<Pagination<Usuario> | null> {
+    try {
+        const { page, limit, search, searchField, sort, order } = queryDto;
+
+        const queryBuilder =
         this.usuarioRepository.createQueryBuilder('usuario');
 
-    return paginate<Usuario>(queryBuilder, options);
+        // 🔹 Búsqueda
+        if (search) {
+            if (searchField) {
+                switch (searchField) {
+                case 'nombre_usuario':
+                    queryBuilder.andWhere(
+                    'usuario.nombre_usuario ILIKE :search',
+                    { search: `%${search}%` },
+                    );
+                    break;
+
+                case 'rol':
+                    queryBuilder.andWhere(
+                    'usuario.rol ILIKE :search',
+                    { search: `%${search}%` },
+                    );
+                    break;
+
+                default:
+                    queryBuilder.andWhere(
+                    'usuario.nombre_usuario ILIKE :search',
+                    { search: `%${search}%` },
+                    );
+                }
+            } else {
+                // 🔹 búsqueda por defecto
+                queryBuilder.andWhere(
+                'usuario.nombre_usuario ILIKE :search',
+                { search: `%${search}%` },
+                );
+            }
+        }
+
+        const allowedSortFields = [
+            'nombre_usuario',
+            'fecha_creacion',
+            'rol',
+        ];
+
+        // 🔹 Ordenamiento dinámico
+        if (sort) {
+        queryBuilder.orderBy(
+            `usuario.${sort}`,
+            (order ?? 'ASC') as 'ASC' | 'DESC',
+        );
+        }
+
+        // 🔹 Paginación
+        return await paginate<Usuario>(queryBuilder, {
+        page,
+        limit,
+        });
+    } catch (error) {
+        console.error('Error retrieving usuarios:', error);
+        return null;
     }
+    }
+
 
     async findOne(id: number): Promise<Usuario | null> {
         return this.usuarioRepository.findOne({
@@ -76,5 +137,18 @@ export class UsuariosService {
         if (!usuario) return null;
 
         return this.usuarioRepository.remove(usuario);
+    }
+
+    async updateProfile(id: number, filename: string): Promise<Usuario | null> {
+        try {
+        const user = await this.findOne(id);
+        if (!user) return null;
+
+        user.profile = filename;
+        return await this.usuarioRepository.save(user);
+        } catch (err) {
+        console.error('Error updating user profile image:', err);
+        return null;
+        }
     }
 }

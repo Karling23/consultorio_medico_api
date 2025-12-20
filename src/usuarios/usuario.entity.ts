@@ -25,4 +25,7 @@ export class Usuario {
         default: () => 'CURRENT_TIMESTAMP',
     })
     fecha_creacion: Date;
+
+    @Column({ nullable: true })
+    profile: string;
 }

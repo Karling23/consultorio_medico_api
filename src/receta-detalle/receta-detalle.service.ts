@@ -6,6 +6,7 @@ import { RecetaDetalle } from './receta-detalle.entity';
 import { CreateRecetaDetalleDto } from './dto/create-receta-detalle.dto';
 import { UpdateRecetaDetalleDto } from './dto/update-receta-detalle.dto';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { QueryDto } from 'src/common/dto/querry.dto';
 
 @Injectable()
 export class RecetaDetalleService {
@@ -22,11 +23,62 @@ export class RecetaDetalleService {
     }
 
     async findAll(
-        options: IPaginationOptions,
-    ): Promise<Pagination<RecetaDetalle>> {
-        const qb = this.recetaDetalleRepository.createQueryBuilder('detalle');
-        return paginate<RecetaDetalle>(qb, options);
+    query: QueryDto,
+    ): Promise<Pagination<RecetaDetalle> | null> {
+    try {
+        const { page, limit, search, searchField, sort, order } = query;
+
+        const qb =
+        this.recetaDetalleRepository.createQueryBuilder('detalle');
+
+        if (search) {
+        const allowedSearchFields = [
+            'medicamento',
+            'dosis',
+            'frecuencia',
+            'duracion',
+        ];
+
+        if (searchField && allowedSearchFields.includes(searchField)) {
+            qb.andWhere(
+            `detalle.${searchField} ILIKE :search`,
+            { search: `%${search}%` },
+            );
+        } else {
+            qb.andWhere(
+            `
+            detalle.medicamento ILIKE :search
+            OR detalle.dosis ILIKE :search
+            OR detalle.frecuencia ILIKE :search
+            OR detalle.duracion ILIKE :search
+            `,
+            { search: `%${search}%` },
+            );
+        }
+        }
+
+        const allowedSortFields = [
+        'id_receta_detalle',
+        'medicamento',
+        ];
+
+        if (sort && allowedSortFields.includes(sort)) {
+        qb.orderBy(
+            `detalle.${sort}`,
+            (order ?? 'ASC') as 'ASC' | 'DESC',
+        );
+        }
+
+        return await paginate<RecetaDetalle>(qb, {
+        page,
+        limit,
+        });
+    } catch (error) {
+        console.error('Error retrieving receta detalle:', error);
+        return null;
     }
+    }
+
 
     async findOne(id: number): Promise<RecetaDetalle | null> {
         return this.recetaDetalleRepository.findOne({
