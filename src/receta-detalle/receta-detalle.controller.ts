@@ -9,6 +9,7 @@ import {
     ParseIntPipe,
     Query,
     UseGuards,
+    InternalServerErrorException,
 } from '@nestjs/common';
 import { RecetaDetalleService } from './receta-detalle.service';
 import { CreateRecetaDetalleDto } from './dto/create-receta-detalle.dto';
@@ -18,6 +19,7 @@ import { RecetaDetalle } from './receta-detalle.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { QueryDto } from 'src/common/dto/querry.dto';
 
 @Controller('receta-detalle')
 export class RecetaDetalleController {
@@ -33,13 +35,25 @@ export class RecetaDetalleController {
     }
 
     @Get()
-    findAll(
-        @Query('page') page = 1,
-        @Query('limit') limit = 10,
+    async findAll(
+    @Query() query: QueryDto,
     ): Promise<Pagination<RecetaDetalle>> {
-        limit = limit > 100 ? 100 : limit;
-        return this.recetaDetalleService.findAll({ page, limit });
+
+        if (query.limit && query.limit > 100) {
+            query.limit = 100;
+        }
+
+        const result = await this.recetaDetalleService.findAll(query);
+
+        if (!result) {
+            throw new InternalServerErrorException(
+            'Could not retrieve receta detalle',
+            );
+        }
+
+        return result;
     }
+
 
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
