@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Receta } from './receta.entity';
 import { CreateRecetaDto } from './dto/create-receta.dto';
 import { UpdateRecetaDto } from './dto/update-receta.dto';
@@ -18,8 +18,24 @@ export class RecetasService {
     return await this.recetaRepository.save(nuevaReceta);
   }
 
-  async findAll(options: IPaginationOptions): Promise<Pagination<Receta>> {
-    return paginate<Receta>(this.recetaRepository, options);
+  async findAll(query: { page: number; limit: number; search?: string; searchField?: string; sort?: string; order?: 'ASC' | 'DESC' }): Promise<Pagination<Receta>> {
+    const { page, limit, search, searchField, sort, order } = query;
+
+    const qb = this.recetaRepository.createQueryBuilder('receta');
+
+    if (search) {
+      // Recetas no tiene campos de texto obvios, se deja vacio o se puede implementar logica especial
+      // const allowedSearchFields = []; 
+      // if (searchField && allowedSearchFields.includes(searchField)) { ... }
+    }
+
+    if (sort) {
+      qb.orderBy(`receta.${sort}`, order === 'DESC' ? 'DESC' : 'ASC');
+    } else {
+      qb.orderBy('receta.id_receta', 'DESC');
+    }
+
+    return paginate<Receta>(qb, { page, limit });
   }
 
   async findOne(id: number): Promise<Receta> {

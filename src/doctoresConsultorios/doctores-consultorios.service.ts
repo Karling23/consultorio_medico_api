@@ -4,8 +4,7 @@ import { Repository } from 'typeorm';
 import { DoctoresConsultorio } from './doctores-consultorio.entity';
 import { CreateDoctoresConsultorioDto } from './dto/create-doctores-consultorio.dto';
 import { UpdateDoctoresConsultorioDto } from './dto/update-doctores-consultorio.dto';
-
-import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class DoctoresConsultoriosService {
@@ -19,8 +18,22 @@ export class DoctoresConsultoriosService {
     return await this.doctoresConsultorioRepository.save(nuevoRegistro);
   }
 
-  async findAll(options: IPaginationOptions): Promise<Pagination<DoctoresConsultorio>> {
-    return paginate<DoctoresConsultorio>(this.doctoresConsultorioRepository, options);
+  async findAll(query: { page: number; limit: number; search?: string; searchField?: string; sort?: string; order?: 'ASC' | 'DESC' }): Promise<Pagination<DoctoresConsultorio>> {
+    const { page, limit, search, searchField, sort, order } = query;
+
+    const qb = this.doctoresConsultorioRepository.createQueryBuilder('doctores_consultorio');
+
+    if (search) {
+      // Sin campos de texto obvios
+    }
+
+    if (sort) {
+      qb.orderBy(`doctores_consultorio.${sort}`, order === 'DESC' ? 'DESC' : 'ASC');
+    } else {
+      qb.orderBy('doctores_consultorio.id', 'DESC');
+    }
+
+    return paginate<DoctoresConsultorio>(qb, { page, limit });
   }
 
   async findOne(id: number): Promise<DoctoresConsultorio> {
