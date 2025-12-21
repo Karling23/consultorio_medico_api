@@ -6,7 +6,6 @@ import {
     Delete,
     Body,
     Param,
-    ParseIntPipe,
     Query,
     UseGuards,
     InternalServerErrorException,
@@ -14,8 +13,6 @@ import {
 import { MedicamentosService } from './medicamentos.service';
 import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
 import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
-import { Pagination } from 'nestjs-typeorm-paginate';
-import { Medicamento } from './medicamento.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -35,27 +32,24 @@ export class MedicamentosController {
     }
 
     @Get()
-    async findAll(
-    @Query() query: QueryDto,
-    ): Promise<Pagination<Medicamento>> {
-
-    if (query.limit && query.limit > 100) {
+    async findAll(@Query() query: QueryDto) {
+        if (query.limit && query.limit > 100) {
         query.limit = 100;
-    }
+        }
 
-    const result = await this.medicamentosService.findAll(query);
+        const result = await this.medicamentosService.findAll(query);
 
-    if (!result) {
+        if (!result) {
         throw new InternalServerErrorException(
-        'Could not retrieve medicamentos',
+            'Could not retrieve medicamentos',
         );
-    }
+        }
 
-    return result;
+        return result;
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    findOne(@Param('id') id: string) {
         return this.medicamentosService.findOne(id);
     }
 
@@ -63,7 +57,7 @@ export class MedicamentosController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
     update(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id') id: string,
         @Body() updateDto: UpdateMedicamentoDto,
     ) {
         return this.medicamentosService.update(id, updateDto);
@@ -72,7 +66,7 @@ export class MedicamentosController {
     @Delete(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
-    remove(@Param('id', ParseIntPipe) id: number) {
+    remove(@Param('id') id: string) {
         return this.medicamentosService.remove(id);
     }
 }

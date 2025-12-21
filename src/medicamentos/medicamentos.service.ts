@@ -1,93 +1,84 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Medicamento } from './medicamento.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Medicamento } from './schemas/medicamento.schema';
 import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
 import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { QueryDto } from 'src/common/dto/querry.dto';
 
 @Injectable()
 export class MedicamentosService {
     constructor(
-        @InjectRepository(Medicamento)
-        private readonly medicamentoRepository: Repository<Medicamento>,
+        @InjectModel(Medicamento.name)
+        private readonly medicamentoModel: Model<Medicamento>,
     ) {}
 
-    async create(
-        createDto: CreateMedicamentoDto,
-    ): Promise<Medicamento> {
-        const medicamento = this.medicamentoRepository.create(createDto);
-        return this.medicamentoRepository.save(medicamento);
+    async create(dto: CreateMedicamentoDto): Promise<Medicamento> {
+        return this.medicamentoModel.create(dto);
     }
 
-    async findAll(
-    query: QueryDto,
-    ): Promise<Pagination<Medicamento> | null> {
-    try {
-        const { page, limit, search, searchField, sort, order } = query;
+    async findAll(query: QueryDto) {
+        const {
+        page = 1,
+        limit = 10,
+        search,
+        searchField,
+        sort = 'createdAt',
+        order = 'ASC',
+        } = query;
 
-        const qb = this.medicamentoRepository.createQueryBuilder('medicamento');
+        const filter: any = {};
 
         if (search) {
-        const allowedSearchFields = ['nombre', 'descripcion'];
-
-        if (searchField && allowedSearchFields.includes(searchField)) {
-            qb.andWhere(
-            `medicamento.${searchField} ILIKE :search`,
-            { search: `%${search}%` },
-            );
+        if (searchField) {
+            filter[searchField] = { $regex: search, $options: 'i' };
         } else {
-            qb.andWhere(
-            `
-            medicamento.nombre ILIKE :search
-            OR medicamento.descripcion ILIKE :search
-            `,
-            { search: `%${search}%` },
-            );
+            filter.$or = [
+            { nombre: { $regex: search, $options: 'i' } },
+            { descripcion: { $regex: search, $options: 'i' } },
+            ];
         }
         }
 
-        const allowedSortFields = ['id_medicamento', 'nombre'];
+        const skip = (page - 1) * limit;
+        const sortOrder = order === 'DESC' ? -1 : 1;
 
-        if (sort && allowedSortFields.includes(sort)) {
-        qb.orderBy(
-            `medicamento.${sort}`,
-            (order ?? 'ASC') as 'ASC' | 'DESC',
-        );
-        }
+        const [items, totalItems] = await Promise.all([
+        this.medicamentoModel
+            .find(filter)
+            .sort({ [sort]: sortOrder })
+            .skip(skip)
+            .limit(limit)
+            .exec(),
+        this.medicamentoModel.countDocuments(filter),
+        ]);
 
-        return await paginate<Medicamento>(qb, {
-        page,
-        limit,
-        });
-    } catch (error) {
-        console.error('Error retrieving medicamentos:', error);
-        return null;
+        return {
+        items,
+        meta: {
+            totalItems,
+            itemCount: items.length,
+            itemsPerPage: limit,
+            totalPages: Math.ceil(totalItems / limit),
+            currentPage: page,
+        },
+        };
     }
-    }
 
-    async findOne(id: number): Promise<Medicamento | null> {
-        return this.medicamentoRepository.findOne({
-        where: { id_medicamento: id },
-        });
+    async findOne(id: string): Promise<Medicamento | null> {
+        return this.medicamentoModel.findById(id).exec();
     }
 
     async update(
-        id: number,
-        updateDto: UpdateMedicamentoDto,
+        id: string,
+        dto: UpdateMedicamentoDto,
     ): Promise<Medicamento | null> {
-        const medicamento = await this.findOne(id);
-        if (!medicamento) return null;
-
-        Object.assign(medicamento, updateDto);
-        return this.medicamentoRepository.save(medicamento);
+        return this.medicamentoModel
+        .findByIdAndUpdate(id, dto, { new: true })
+        .exec();
     }
 
-    async remove(id: number): Promise<Medicamento | null> {
-        const medicamento = await this.findOne(id);
-        if (!medicamento) return null;
-
-        return this.medicamentoRepository.remove(medicamento);
+    async remove(id: string): Promise<Medicamento | null> {
+        return this.medicamentoModel.findByIdAndDelete(id).exec();
     }
 }

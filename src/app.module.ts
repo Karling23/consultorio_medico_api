@@ -16,10 +16,12 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
 import { RecetaDetalleModule } from './receta-detalle/receta-detalle.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URI || ''),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
