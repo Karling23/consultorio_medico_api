@@ -14,12 +14,12 @@ import {
 import { HistorialClinicoService } from './historial-clinico.service';
 import { CreateHistorialClinicoDto } from './dto/create-historial-clinico.dto';
 import { UpdateHistorialClinicoDto } from './dto/update-historial-clinico.dto';
-import { Pagination } from 'nestjs-typeorm-paginate';
-import { HistorialClinico } from './historial-clinico.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { QueryDto } from 'src/common/dto/querry.dto';
+import { PaginationResult } from 'src/common/interfaces/pagination.interface';
+import { HistorialClinico } from './schemas/historial-clinico.schema';
 
 
 @Controller('historial-clinico')
@@ -38,7 +38,7 @@ export class HistorialClinicoController {
     @Get()
     async findAll(
     @Query() query: QueryDto,
-    ): Promise<Pagination<HistorialClinico>> {
+    ): Promise<PaginationResult<HistorialClinico>> {
 
     if (query.limit && query.limit > 100) {
         query.limit = 100;
@@ -57,7 +57,7 @@ export class HistorialClinicoController {
 
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    findOne(@Param('id') id: string) {
         return this.historialClinicoService.findOne(id);
     }
 
@@ -65,7 +65,7 @@ export class HistorialClinicoController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
     update(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id') id: string,
         @Body() updateDto: UpdateHistorialClinicoDto,
     ) {
         return this.historialClinicoService.update(id, updateDto);
@@ -74,7 +74,7 @@ export class HistorialClinicoController {
     @Delete(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
-    remove(@Param('id', ParseIntPipe) id: number) {
+    remove(@Param('id') id: string) {
         return this.historialClinicoService.remove(id);
     }
 }

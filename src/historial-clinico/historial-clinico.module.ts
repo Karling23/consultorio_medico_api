@@ -1,12 +1,19 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { HistorialClinicoService } from './historial-clinico.service';
 import { HistorialClinicoController } from './historial-clinico.controller';
-import { HistorialClinico } from './historial-clinico.entity';
+import {
+  HistorialClinico,
+  HistorialClinicoSchema,
+} from './schemas/historial-clinico.schema';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HistorialClinico])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: HistorialClinico.name, schema: HistorialClinicoSchema },
+    ]),
+  ],
   controllers: [HistorialClinicoController],
   providers: [HistorialClinicoService],
 })
