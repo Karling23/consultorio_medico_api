@@ -1,0 +1,48 @@
+name: 🚀 Deploy Consultorio Médico API to VPS
+
+on:
+  push:
+    branches: [master]  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Copy project to VPS
+      uses: appleboy/scp-action@v0.1.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_KEY }}
+        source: "."
+        target: "/opt/consultorio_medico_api"
+
+    - name: Run deploy commands on VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_KEY }}
+        script: |
+          set -e
+          cd /opt/consultorio_medico_api
+
+          # 🔥 Detener proceso en puerto (si existe)
+          sudo lsof -t -i:3000 | xargs -r sudo kill -9 || true
+
+          # 🔐 Crear archivo .env
+          printf "%s" "${{ secrets.ENV_FILE }}" > .env
+
+          # 📦 Instalar dependencias y construir
+          npm install
+          npm run build
+
+          # 🚀 Reiniciar app con PM2
+          pm2 stop consultorio_api || true
+          pm2 delete consultorio_api || true
+          pm2 start dist/main.js --name consultorio-medico-api
+          pm2 save
