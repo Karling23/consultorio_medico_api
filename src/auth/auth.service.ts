@@ -33,7 +33,7 @@ export class AuthService {
         const payload = {
             id: user.id_usuario,
             username: user.nombre_usuario,
-            rol: user.rol,
+            rol: 'usuario',
         };
         return this.jwtService.sign(payload);
     }
