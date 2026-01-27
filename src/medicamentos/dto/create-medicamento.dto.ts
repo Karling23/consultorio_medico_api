@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreateMedicamentoDto {
     @IsString()
@@ -6,5 +7,16 @@ export class CreateMedicamentoDto {
     nombre: string;
 
     @IsString()
-    descripcion: string;
+    @IsOptional()
+    descripcion?: string;
+
+    @Type(() => Number)
+    @IsNumber({ maxDecimalPlaces: 2 })
+    @Min(0)
+    precio: number;
+
+    @Type(() => Number)
+    @IsInt()
+    @Min(0)
+    stock: number;
 }

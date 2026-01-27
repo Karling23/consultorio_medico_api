@@ -1,4 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Paciente } from '../pacientes/paciente.entity';
+import { Doctor } from '../doctores/doctor.entity';
+import { Consultorio } from '../consultorios/consultorio.entity';
 
 @Entity('citas_medicas')
 export class CitaMedica {
@@ -8,11 +11,23 @@ export class CitaMedica {
     @Column({ name: 'id_paciente' })
     id_paciente: number;
 
+    @ManyToOne(() => Paciente, { eager: false })
+    @JoinColumn({ name: 'id_paciente', referencedColumnName: 'id_paciente' })
+    paciente: Paciente;
+
     @Column({ name: 'id_doctor' })
     id_doctor: number;
 
+    @ManyToOne(() => Doctor, { eager: false })
+    @JoinColumn({ name: 'id_doctor', referencedColumnName: 'id_doctor' })
+    doctor: Doctor;
+
     @Column({ name: 'id_consultorio' })
     id_consultorio: number;
+
+    @ManyToOne(() => Consultorio, { eager: false })
+    @JoinColumn({ name: 'id_consultorio', referencedColumnName: 'id_consultorio' })
+    consultorio: Consultorio;
 
     @Column({ type: 'date', name: 'fecha_cita' })
     fecha_cita: string;

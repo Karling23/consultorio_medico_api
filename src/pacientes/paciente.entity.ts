@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column,} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Usuario } from '../usuarios/usuario.entity';
 
 @Entity('pacientes')
 export class Paciente {
@@ -7,6 +8,10 @@ export class Paciente {
 
     @Column({ name: 'id_usuario' })
     id_usuario: number;
+
+    @ManyToOne(() => Usuario, { eager: false })
+    @JoinColumn({ name: 'id_usuario', referencedColumnName: 'id_usuario' })
+    usuario: Usuario;
 
     @Column({ name: 'cedula', length: 10, unique: true })
     cedula: string;

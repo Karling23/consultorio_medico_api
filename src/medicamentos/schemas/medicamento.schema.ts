@@ -8,6 +8,12 @@ export class Medicamento extends Document {
 
     @Prop({ default: null })
     descripcion: string;
+
+    @Prop({ required: true, min: 0 })
+    precio: number;
+
+    @Prop({ required: true, min: 0 })
+    stock: number;
 }
 
 export const MedicamentoSchema = SchemaFactory.createForClass(Medicamento);
