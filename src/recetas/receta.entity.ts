@@ -5,8 +5,8 @@ export class Receta {
   @PrimaryGeneratedColumn('increment')
   id_receta: number;
 
-  @Column({ type: 'integer', nullable: false })
-  id_historial: number;
+  @Column({ type: 'varchar', length: 64, nullable: false })
+  id_historial: string;
 
   @Column({ type: 'date', default: () => 'CURRENT_DATE' })
   fecha_emision: string;

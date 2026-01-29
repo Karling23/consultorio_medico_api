@@ -1,9 +1,9 @@
-import { IsInt, IsNotEmpty, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateRecetaDto {
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  id_historial: number;
+  id_historial: string;
 
   @IsDateString()
   @IsOptional()

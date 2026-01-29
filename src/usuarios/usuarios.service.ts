@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -11,12 +11,18 @@ import {
     IPaginationOptions,
 } from 'nestjs-typeorm-paginate';
 import { QueryDto } from 'src/common/dto/querry.dto';
+import { Doctor } from '../doctores/doctor.entity';
+import { Paciente } from '../pacientes/paciente.entity';
 
 @Injectable()
 export class UsuariosService {
     constructor(
         @InjectRepository(Usuario)
         private readonly usuarioRepository: Repository<Usuario>,
+        @InjectRepository(Doctor)
+        private readonly doctoresRepository: Repository<Doctor>,
+        @InjectRepository(Paciente)
+        private readonly pacientesRepository: Repository<Paciente>,
     ) {}
 
     async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
@@ -132,9 +138,25 @@ export class UsuariosService {
         return this.usuarioRepository.save(usuario);
     }
 
-    async remove(id: number): Promise<Usuario | null> {
+    async remove(id: number): Promise<Usuario> {
         const usuario = await this.findOne(id);
-        if (!usuario) return null;
+        if (!usuario) {
+            throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+        }
+
+        const doctoresCount = await this.doctoresRepository.count({ where: { id_usuario: id } });
+        if (doctoresCount > 0) {
+            throw new BadRequestException(
+                `No se puede eliminar el usuario porque está asociado a ${doctoresCount} doctor(es).`
+            );
+        }
+
+        const pacientesCount = await this.pacientesRepository.count({ where: { id_usuario: id } });
+        if (pacientesCount > 0) {
+            throw new BadRequestException(
+                `No se puede eliminar el usuario porque está asociado a ${pacientesCount} paciente(s).`
+            );
+        }
 
         return this.usuarioRepository.remove(usuario);
     }

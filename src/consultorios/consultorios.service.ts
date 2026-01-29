@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -6,12 +6,18 @@ import { Consultorio } from './consultorio.entity';
 import { CreateConsultorioDto } from './dto/create-consultorio.dto';
 import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { CitaMedica } from '../citas-medicas/cita-medica.entity';
+import { DoctoresConsultorio } from '../doctoresConsultorios/doctores-consultorio.entity';
 
 @Injectable()
 export class ConsultoriosService {
     constructor(
         @InjectRepository(Consultorio)
         private readonly consultoriosRepository: Repository<Consultorio>,
+        @InjectRepository(CitaMedica)
+        private readonly citasRepository: Repository<CitaMedica>,
+        @InjectRepository(DoctoresConsultorio)
+        private readonly doctoresConsultoriosRepository: Repository<DoctoresConsultorio>,
     ) {}
 
     async create(
@@ -56,9 +62,27 @@ export class ConsultoriosService {
         return this.consultoriosRepository.save(consultorio);
     }
 
-    async remove(id: number): Promise<Consultorio | null> {
+    async remove(id: number): Promise<Consultorio> {
         const consultorio = await this.findOne(id);
-        if (!consultorio) return null;
+        if (!consultorio) {
+            throw new NotFoundException(`Consultorio con ID ${id} no encontrado`);
+        }
+
+        const citasCount = await this.citasRepository.count({ where: { id_consultorio: id } });
+        if (citasCount > 0) {
+            throw new BadRequestException(
+                `No se puede eliminar el consultorio porque tiene ${citasCount} cita(s) asociada(s).`
+            );
+        }
+
+        const doctoresCount = await this.doctoresConsultoriosRepository.count({
+            where: { id_consultorio: id },
+        });
+        if (doctoresCount > 0) {
+            throw new BadRequestException(
+                `No se puede eliminar el consultorio porque tiene ${doctoresCount} doctor(es) asociado(s).`
+            );
+        }
 
         return this.consultoriosRepository.remove(consultorio);
     }

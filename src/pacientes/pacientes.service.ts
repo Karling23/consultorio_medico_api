@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -6,12 +6,15 @@ import { Paciente } from './paciente.entity';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { CitaMedica } from '../citas-medicas/cita-medica.entity';
 
 @Injectable()
 export class PacientesService {
     constructor(
         @InjectRepository(Paciente)
         private readonly pacientesRepository: Repository<Paciente>,
+        @InjectRepository(CitaMedica)
+        private readonly citasRepository: Repository<CitaMedica>,
     ) {}
 
     async create(
@@ -56,9 +59,18 @@ export class PacientesService {
         return this.pacientesRepository.save(paciente);
     }
 
-    async remove(id: number): Promise<Paciente | null> {
+    async remove(id: number): Promise<Paciente> {
         const paciente = await this.findOne(id);
-        if (!paciente) return null;
+        if (!paciente) {
+            throw new NotFoundException(`Paciente con ID ${id} no encontrado`);
+        }
+
+        const citasCount = await this.citasRepository.count({ where: { id_paciente: id } });
+        if (citasCount > 0) {
+            throw new BadRequestException(
+                `No se puede eliminar el paciente porque tiene ${citasCount} cita(s) asociada(s).`
+            );
+        }
 
         return this.pacientesRepository.remove(paciente);
     }
